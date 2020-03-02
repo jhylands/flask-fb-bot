@@ -1,10 +1,11 @@
 import random
 from flask import Flask, request
 from pymessenger.bot import Bot
+import os
 
 app = Flask(__name__)       # Initializing our Flask application
-ACCESS_TOKEN = 'GENERATED_TOKEN_FROM_FACEBOOK'
-VERIFY_TOKEN = 'UNIQE_TOKEN'
+ACCESS_TOKEN = os.ENVIRO['ACCESS_TOKEN']
+VERIFY_TOKEN = os.ENVIRO['VERIFY_TOKEN']
 bot = Bot(ACCESS_TOKEN)
 
 # Importing standard route and two requst types: GET and POST.
@@ -28,6 +29,20 @@ def receive_message():
                     # Facebook Messenger ID for user so we know where to send response back to
                     recipient_id = message['sender']['id']
                     if message['message'].get('text'):
+                        if message['message'].get('text')=="send button":
+                            questions = {
+  "type":"postback",
+  "title":"Questions",
+  "payload":"Questions"
+}
+                            inflation = {
+  "type":"postback",
+  "title":"inflation",
+  "payload":"inflation"
+}
+                            bot.send_button_message(recipient_id, "Please select one of the following", [questions, inflation])
+                            return "Message Processed"
+                            
                         response_sent_text = get_message()
                         send_message(recipient_id, response_sent_text)
                     # if user send us a GIF, photo, video or any other non-text item
